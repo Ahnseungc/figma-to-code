@@ -1,41 +1,82 @@
 import { loadFigmaToken } from './figma-token.mjs';
 
+const FIGMA_API = 'https://api.figma.com/v1';
 const DEFAULT_FILE_KEY = process.env.FIGMA_FILE_KEY;
 
-/**
- * Figma Images API — 벡터 기반 네이티브 PNG 렌더 (MCP 1x 스크린샷 업스케일보다 선명)
- * @returns {Promise<Buffer | null>} 토큰 없거나 실패 시 null
- */
-export async function fetchFigmaNodePng(nodeId, scale, fileKey = DEFAULT_FILE_KEY) {
-  if (!fileKey) throw new Error('fileKey 가 없습니다. 인자나 FIGMA_FILE_KEY 로 넘기세요.');
+function requireToken() {
   const token = loadFigmaToken();
-  if (!token) return null;
+  if (!token) {
+    throw new Error(
+      'FIGMA_TOKEN 이 없습니다. Figma → Settings → Personal access tokens 에서 발급 후 ' +
+        '환경변수나 .env.local 에 FIGMA_TOKEN=... 으로 넣으세요.',
+    );
+  }
+  return token;
+}
 
-  const imagesUrl = new URL(`https://api.figma.com/v1/images/${fileKey}`);
-  imagesUrl.searchParams.set('ids', nodeId);
-  imagesUrl.searchParams.set('format', 'png');
-  imagesUrl.searchParams.set('scale', String(scale));
+function requireFileKey(fileKey) {
+  if (!fileKey) throw new Error('fileKey 가 없습니다. 인자나 FIGMA_FILE_KEY 로 넘기세요.');
+  return fileKey;
+}
 
-  const imagesRes = await fetch(imagesUrl, {
-    headers: { 'X-FIGMA-TOKEN': token },
-  });
+async function figmaGet(pathname, params, token) {
+  const url = new URL(`${FIGMA_API}${pathname}`);
+  for (const [key, value] of Object.entries(params)) url.searchParams.set(key, String(value));
 
-  if (!imagesRes.ok) {
-    throw new Error(`Figma Images API ${imagesRes.status}: ${await imagesRes.text()}`);
+  const res = await fetch(url, { headers: { 'X-FIGMA-TOKEN': token } });
+  if (!res.ok) {
+    throw new Error(`Figma API ${pathname} ${res.status}: ${await res.text()}`);
   }
 
-  const { images, err } = await imagesRes.json();
-  if (err) {
-    throw new Error(`Figma Images API 오류: ${err}`);
+  const body = await res.json();
+  if (body.err) throw new Error(`Figma API 오류: ${body.err}`);
+  return body;
+}
+
+/**
+ * Figma Images API — 여러 노드를 한 번에 렌더해 Buffer 로 받는다.
+ * @param {string[]} nodeIds
+ * @param {{ format?: 'png' | 'svg' | 'jpg' | 'pdf', scale?: number, fileKey?: string }} options
+ * @returns {Promise<Map<string, Buffer>>} 렌더 URL 이 없는 노드는 빠진다
+ */
+export async function fetchFigmaNodeImages(nodeIds, options = {}) {
+  const { format = 'png', scale = 2, fileKey = DEFAULT_FILE_KEY } = options;
+  const token = requireToken();
+
+  const params = { ids: nodeIds.join(','), format };
+  if (format !== 'svg') params.scale = scale;
+
+  const { images } = await figmaGet(`/images/${requireFileKey(fileKey)}`, params, token);
+  const result = new Map();
+
+  for (const nodeId of nodeIds) {
+    const renderUrl = images[nodeId];
+    if (!renderUrl) continue;
+
+    const res = await fetch(renderUrl);
+    if (!res.ok) throw new Error(`${nodeId} 다운로드 실패 ${res.status}`);
+    result.set(nodeId, Buffer.from(await res.arrayBuffer()));
   }
 
-  const renderUrl = images[nodeId];
-  if (!renderUrl) return null;
+  return result;
+}
 
-  const pngRes = await fetch(renderUrl);
-  if (!pngRes.ok) {
-    throw new Error(`PNG 다운로드 실패 ${pngRes.status}`);
-  }
+/** 노드 하나를 PNG 로 (벡터 기반 네이티브 렌더 — MCP 1x 스크린샷 업스케일보다 선명) */
+export async function fetchFigmaNodePng(nodeId, scale, fileKey = DEFAULT_FILE_KEY) {
+  const images = await fetchFigmaNodeImages([nodeId], { format: 'png', scale, fileKey });
+  return images.get(nodeId) ?? null;
+}
 
-  return Buffer.from(await pngRes.arrayBuffer());
+/**
+ * Figma REST nodes API — 레이아웃·수치의 정본(SSOT).
+ * @returns {Promise<Record<string, { document: object }>>}
+ */
+export async function fetchFigmaNodes(nodeIds, fileKey = DEFAULT_FILE_KEY) {
+  const token = requireToken();
+  const { nodes } = await figmaGet(
+    `/files/${requireFileKey(fileKey)}/nodes`,
+    { ids: nodeIds.join(',') },
+    token,
+  );
+  return nodes;
 }

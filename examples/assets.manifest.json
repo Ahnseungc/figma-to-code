@@ -1,0 +1,11 @@
+{
+  "fileKey": "YOUR_FILE_KEY",
+  "outDir": "public/images/landing",
+  "format": "png",
+  "scale": 3,
+  "assets": [
+    { "nodeId": "12:345", "file": "quick-menu/estimate.png" },
+    { "nodeId": "12:346", "file": "quick-menu/history.png" },
+    { "nodeId": "12:400", "file": "sns/kakao.svg", "format": "svg" }
+  ]
+}

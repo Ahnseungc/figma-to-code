@@ -1,7 +1,7 @@
 {
   "name": "figma-to-code",
-  "version": "0.1.0",
-  "description": "Figma MCP로 읽은 디자인을 어느 디자인 시스템에서든 토큰 단위로 정확히 옮기고, 스크린샷 기준으로 시각 QA까지 끝내는 스킬 묶음",
+  "version": "0.2.0",
+  "description": "Figma 디자인을 어느 디자인 시스템에서든 토큰 단위로 옮기는 에이전트·스킬 묶음 — 3회 값 대조, REST 스펙 교차 QA, 스크린샷 시각 QA",
   "author": {
     "name": "Ahnseungc",
     "url": "https://github.com/Ahnseungc"

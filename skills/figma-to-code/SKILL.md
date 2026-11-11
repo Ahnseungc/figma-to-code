@@ -41,12 +41,28 @@ MCP 연결·폴백은 `figma-mcp-setup` 스킬. URL `?node-id=12-345` → `nodeI
 
 아이콘이 있는 화면이면 이 단계에서 **아이콘 인벤토리**(구간·개수·이름, `.svg` URL 유무)를 같이 만든다.
 
+### 수치의 정본은 REST nodes JSON
+
+`get_design_context` 참고 코드는 정본이 아니다. `FIGMA_TOKEN` 이 있으면 같은 노드의 스냅샷을 저장해 둔다.
+
+```bash
+node scripts/fetch-node-spec.mjs <fileKey> <nodeId> specs/figma/<nodeId>.json
+```
+
+| 항목 | 정본 |
+|---|---|
+| 레이아웃·크기·간격·반경·텍스트 수치 | REST `GET /v1/files/:fileKey/nodes?ids=` 스냅샷 |
+| 변수 이름 | `get_variable_defs` + 토큰 파일 grep |
+| 시각 | `get_screenshot` |
+
+토큰이 없으면 MCP 값을 임시 정본으로 쓰고, 보고에 `REST 미검증` 이라고 적는다.
+
 ## 2. 3회 대조 — 끝나기 전엔 코드를 쓰지 않는다
 
 | 회차 | 할 일 | 산출 |
 |---|---|---|
 | **1회** | 노드의 타이포·색·간격·반경·그림자를 토큰 맵과 **한 줄씩** 대응 (`references/token-mapping.md`) | 짧은 매핑 메모 |
-| **2회** | DS 컴포넌트로 대체 가능한지 확인(`search_design_system`, 코드 grep). 아이콘 SVG 확보 경로 확정 | 쓸 컴포넌트·클래스 목록 |
+| **2회** | DS 컴포넌트로 대체 가능한지 확인(`design-reuse-first` 스킬, `search_design_system`). 아이콘 SVG 확보 경로 확정 | 쓸 컴포넌트·클래스 목록 |
 | **3회** | 매핑 메모에서 임의 값(`[..px]`, Hex, 토큰에 없는 유틸)이 남았는지 스캔. 쓰려는 클래스·토큰을 **grep 해서 실제로 존재하는지** 확인 | 이때부터 구현 |
 
 MCP 한도·오류로 노드를 못 읽으면 대조를 끝낼 수 없다. 사용자에게 알리고 스크린샷·Dev Mode 수치 중
@@ -76,8 +92,9 @@ MCP 한도·오류로 노드를 못 읽으면 대조를 끝낼 수 없다. 사�
 ## 5. 끝내는 조건
 
 1. 타입체크·린트 통과
-2. **`figma-visual-qa` 스킬로 베이스라인 스크린샷과 시각 대조 완료**
-3. 최종 보고에 `비교한 nodeId` · `맞춘 항목` · `남은 차이(의도/미해결)` 포함
+2. **`figma-spec-qa`** — REST 스냅샷 ↔ MCP ↔ 코드 값 교차 대조, Open 0건
+3. **`figma-visual-qa`** — 베이스라인 스크린샷과 시각 대조. 페이지 전체면 **`figma-page-qa`** 도
+4. 최종 보고에 `비교한 nodeId` · `맞춘 항목` · `남은 차이(의도/미해결)` 포함
 
 시각 QA 전에는 완료라고 말하지 않는다.
 
