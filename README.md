@@ -52,7 +52,7 @@ flowchart TB
 한 화면을 구현할 때 `design-ui` 가 밟는 순서입니다. **3회 대조가 끝나기 전에는 코드를 쓰지 않고**, 두 번의 QA를 통과해야 완료입니다.
 
 ```mermaid
-flowchart LR
+flowchart TB
   A[Figma URL] --> B{토큰 맵<br/>있음?}
   B -- 없음 --> B1[코드베이스에서<br/>토큰 맵 생성] --> C
   B -- 있음 --> C[노드 읽기<br/>design_context · screenshot<br/>variable_defs · REST 스냅샷]
