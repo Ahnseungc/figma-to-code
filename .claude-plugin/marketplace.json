@@ -1,0 +1,17 @@
+{
+  "name": "figma-to-code",
+  "owner": {
+    "name": "Ahnseungc",
+    "url": "https://github.com/Ahnseungc"
+  },
+  "metadata": {
+    "description": "Figma 디자인을 디자인 시스템 토큰 그대로 코드로 옮기는 스킬"
+  },
+  "plugins": [
+    {
+      "name": "figma-to-code",
+      "source": "./",
+      "description": "Figma → 코드 이식 워크플로: 토큰 맵 · 3회 값 대조 · 스크린샷 시각 QA"
+    }
+  ]
+}

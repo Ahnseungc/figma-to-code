@@ -1,0 +1,13 @@
+{
+  "name": "figma-to-code",
+  "version": "0.1.0",
+  "description": "Figma MCP로 읽은 디자인을 어느 디자인 시스템에서든 토큰 단위로 정확히 옮기고, 스크린샷 기준으로 시각 QA까지 끝내는 스킬 묶음",
+  "author": {
+    "name": "Ahnseungc",
+    "url": "https://github.com/Ahnseungc"
+  },
+  "homepage": "https://github.com/Ahnseungc/figma-to-code",
+  "repository": "https://github.com/Ahnseungc/figma-to-code",
+  "license": "MIT",
+  "keywords": ["figma", "mcp", "design-system", "design-tokens", "tailwind", "visual-qa"]
+}
