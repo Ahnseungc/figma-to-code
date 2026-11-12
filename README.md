@@ -142,8 +142,6 @@ node scripts/export-assets.mjs examples/assets.manifest.json
 node scripts/export-node-png.mjs <fileKey> 12:345 baseline.png 4
 ```
 
-`export-node-png.mjs`는 `--plugin` 옵션을 주면 토큰 없이 TalkToFigma 플러그인을 거쳐 export합니다.
-
 ## 라이선스
 
 MIT

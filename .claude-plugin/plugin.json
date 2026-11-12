@@ -1,6 +1,6 @@
 {
   "name": "figma-to-code",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Figma 디자인을 어느 디자인 시스템에서든 토큰 단위로 옮기는 에이전트·스킬 묶음 — 3회 값 대조, REST 스펙 교차 QA, 스크린샷 시각 QA",
   "author": {
     "name": "Ahnseungc",
