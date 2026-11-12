@@ -3,6 +3,11 @@ import { loadFigmaToken } from './figma-token.mjs';
 const FIGMA_API = 'https://api.figma.com/v1';
 const DEFAULT_FILE_KEY = process.env.FIGMA_FILE_KEY;
 
+/** URL 의 `node-id=12-345` (인스턴스 `I12-345;67-89`) 를 API 형식 `12:345` 로 */
+export function normalizeNodeId(nodeId) {
+  return nodeId.replaceAll('-', ':');
+}
+
 function requireToken() {
   const token = loadFigmaToken();
   if (!token) {

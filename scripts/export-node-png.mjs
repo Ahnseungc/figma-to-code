@@ -6,7 +6,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { fetchFigmaNodePng } from './lib/figma-rest-export.mjs';
+import { fetchFigmaNodePng, normalizeNodeId } from './lib/figma-rest-export.mjs';
 import { fetchTalkToFigmaNodePng } from './lib/figma-talk-to-figma-export.mjs';
 
 const DEFAULT_SCALE = 4;
@@ -24,9 +24,10 @@ async function main() {
   const usePlugin = args[0] === '--plugin';
   if (usePlugin) args.shift();
 
-  const [fileKey, nodeId, out, scaleArg] = usePlugin ? [undefined, ...args] : args;
-  if (!nodeId || !out || (!usePlugin && !fileKey)) usage();
+  const [fileKey, rawNodeId, out, scaleArg] = usePlugin ? [undefined, ...args] : args;
+  if (!rawNodeId || !out || (!usePlugin && !fileKey)) usage();
 
+  const nodeId = normalizeNodeId(rawNodeId);
   const scale = Number(scaleArg ?? DEFAULT_SCALE);
   const png = usePlugin
     ? await fetchTalkToFigmaNodePng(nodeId, scale)

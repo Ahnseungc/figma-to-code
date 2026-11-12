@@ -8,7 +8,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { fetchFigmaNodeImages } from './lib/figma-rest-export.mjs';
+import { fetchFigmaNodeImages, normalizeNodeId } from './lib/figma-rest-export.mjs';
 
 const DEFAULT_SCALE = 3;
 
@@ -17,7 +17,8 @@ function readManifest(manifestPath) {
   if (!manifest.fileKey || !manifest.outDir || !Array.isArray(manifest.assets)) {
     throw new Error('manifest 에 fileKey, outDir, assets[] 가 필요합니다.');
   }
-  return manifest;
+  const assets = manifest.assets.map((asset) => ({ ...asset, nodeId: normalizeNodeId(asset.nodeId) }));
+  return { ...manifest, assets };
 }
 
 function groupByFormat(manifest) {

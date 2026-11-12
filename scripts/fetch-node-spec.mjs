@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { flattenNodeSpec } from './lib/figma-node-spec.mjs';
-import { fetchFigmaNodes } from './lib/figma-rest-export.mjs';
+import { fetchFigmaNodes, normalizeNodeId } from './lib/figma-rest-export.mjs';
 
 async function main() {
   const [fileKey, rawNodeId, out] = process.argv.slice(2);
@@ -17,7 +17,7 @@ async function main() {
     process.exit(1);
   }
 
-  const nodeId = rawNodeId.replaceAll('-', ':');
+  const nodeId = normalizeNodeId(rawNodeId);
   const nodes = await fetchFigmaNodes([nodeId], fileKey);
   const document = nodes[nodeId]?.document;
   if (!document) throw new Error(`노드를 찾지 못했습니다: ${nodeId}`);
