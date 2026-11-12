@@ -129,6 +129,8 @@ design-orchestrator로 https://www.figma.com/design/…?node-id=12-345 화면 �
 
 Node 18 이상이 필요합니다. `FIGMA_TOKEN`을 환경 변수나 `.env.local`에 넣어 둡니다. 토큰은 Figma 설정의 Personal access tokens에서 발급합니다.
 
+스크립트는 플러그인 폴더에 있고 출력 경로와 `.env.local`은 실행한 디렉터리 기준이라, 프로젝트 루트에서 플러그인 경로로 실행합니다. 스킬 안에서는 `${CLAUDE_PLUGIN_ROOT}/scripts/...`로 부릅니다. 아래 예시는 이 레포를 클론한 디렉터리 기준입니다.
+
 ```bash
 # 노드 스펙 스냅샷 (figma-spec-qa 입력)
 node scripts/fetch-node-spec.mjs <fileKey> 12:345 specs/figma/12-345.json

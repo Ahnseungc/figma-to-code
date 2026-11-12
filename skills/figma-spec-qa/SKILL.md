@@ -23,11 +23,16 @@ MCP 하나만 보고 구현하면 MCP가 틀렸을 때 같이 틀린다. 노드 
 ## 1. 스냅샷 준비
 
 ```bash
-node scripts/fetch-node-spec.mjs <fileKey> <nodeId> specs/figma/<nodeId>.json
+node "${CLAUDE_PLUGIN_ROOT}/scripts/fetch-node-spec.mjs" <fileKey> <nodeId> specs/figma/<nodeId>.json
 ```
 
-결과는 노드마다 `size`, `text`(font·size·weight·lineHeight·letterSpacing), `fills`, `radius`, `layout`(gap·padding),
-`shadows`, `stroke`, `variables` 를 가진 평평한 목록이다.
+경로는 `figma-to-code` §1 과 같다. `${CLAUDE_PLUGIN_ROOT}` 가 없으면 스크립트를 복사한 경로로 바꾼다.
+
+결과는 노드마다 `size`, `sizing`(HUG·FILL·FIXED), `text`(font·size·weight·lineHeight·letterSpacing, 구간별 스타일 `runs`),
+`fills`, `radius`, `layout`(gap·padding·정렬·wrap), `shadows`, `stroke`, `variables` 를 가진 평평한 목록이다.
+
+- `sizing` 이 `HUG` 인 칩·뱃지는 코드에서도 내용 폭이어야 한다 (`w-fit`·`self-start`). block 기본값으로 카드 폭이 되면 fixed 대상.
+- `runs` 가 있으면 한 텍스트 안에서 색·굵기가 바뀌는 구간이다. 구간마다 토큰을 따로 대조한다.
 
 `FIGMA_TOKEN` 이 없으면 사용자에게 받거나, Figma Dev Mode 수치 캡처로 대체를 합의한다. 합의 전 완료 보고 금지.
 

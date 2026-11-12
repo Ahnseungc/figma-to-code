@@ -46,8 +46,11 @@ MCP 연결·폴백은 `figma-mcp-setup` 스킬. URL `?node-id=12-345` → `nodeI
 `get_design_context` 참고 코드는 정본이 아니다. `FIGMA_TOKEN` 이 있으면 같은 노드의 스냅샷을 저장해 둔다.
 
 ```bash
-node scripts/fetch-node-spec.mjs <fileKey> <nodeId> specs/figma/<nodeId>.json
+node "${CLAUDE_PLUGIN_ROOT}/scripts/fetch-node-spec.mjs" <fileKey> <nodeId> specs/figma/<nodeId>.json
 ```
+
+스크립트는 플러그인 폴더에 있고, 출력 경로와 `.env.local` 은 현재 디렉터리 기준이다. 프로젝트 루트에서 실행한다.
+`${CLAUDE_PLUGIN_ROOT}` 가 비어 있으면(Cursor 등에 복사해서 설치) 스크립트를 복사한 경로로 바꾸거나 `fetch-node-spec.mjs` 를 Glob 으로 찾는다.
 
 | 항목 | 정본 |
 |---|---|

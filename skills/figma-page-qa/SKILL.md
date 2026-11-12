@@ -46,4 +46,4 @@ description: >-
 ## 관련
 
 - 컴포넌트 단위 시각 QA: `figma-visual-qa`
-- 에셋 일괄 export: `scripts/export-assets.mjs` + 매니페스트
+- 에셋 일괄 export: `${CLAUDE_PLUGIN_ROOT}/scripts/export-assets.mjs` + 매니페스트

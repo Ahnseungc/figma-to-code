@@ -17,7 +17,7 @@ async function main() {
     process.exit(1);
   }
 
-  const nodeId = rawNodeId.replace('-', ':');
+  const nodeId = rawNodeId.replaceAll('-', ':');
   const nodes = await fetchFigmaNodes([nodeId], fileKey);
   const document = nodes[nodeId]?.document;
   if (!document) throw new Error(`노드를 찾지 못했습니다: ${nodeId}`);
