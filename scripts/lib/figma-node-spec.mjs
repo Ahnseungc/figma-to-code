@@ -34,7 +34,18 @@ function typeStyleToSpec(style) {
   return { fontFamily, fontSize, fontWeight, lineHeight: lineHeightPx, letterSpacing };
 }
 
-/** 한 텍스트 안에서 스타일이 바뀌는 구간 (예: 강조 색·굵기). 기본 스타일 구간은 뺀다. */
+function runStyleSpec(node, style) {
+  const base = { ...typeStyleToSpec(node.style), fills: paintsToSpec(node.fills) };
+  const run = { ...typeStyleToSpec(style), fills: paintsToSpec(style.fills) };
+  // override 표는 바뀌지 않은 값도 다시 담아 오므로 기본 스타일과 다른 값만 남긴다
+  return Object.fromEntries(
+    Object.entries(run).filter(
+      ([key, value]) => value !== undefined && JSON.stringify(value) !== JSON.stringify(base[key]),
+    ),
+  );
+}
+
+/** 한 텍스트 안에서 스타일이 바뀌는 구간 (예: 강조 색·굵기). 기본 스타일과 같은 구간은 뺀다. */
 function textRunsSpec(node) {
   const overrides = node.characterStyleOverrides ?? [];
   const table = node.styleOverrideTable ?? {};
@@ -45,12 +56,8 @@ function textRunsSpec(node) {
     if (index < overrides.length && overrides[index] === overrides[start]) continue;
 
     const style = table[overrides[start]];
-    if (overrides[start] !== BASE_STYLE_ID && style) {
-      const spec = Object.fromEntries(
-        Object.entries({ ...typeStyleToSpec(style), fills: paintsToSpec(style.fills) }).filter(
-          ([, value]) => value !== undefined,
-        ),
-      );
+    const spec = overrides[start] !== BASE_STYLE_ID && style ? runStyleSpec(node, style) : {};
+    if (Object.keys(spec).length) {
       runs.push({ characters: node.characters.slice(start, index), ...spec });
     }
     start = index;
